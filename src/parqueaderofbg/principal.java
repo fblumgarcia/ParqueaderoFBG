@@ -9,7 +9,7 @@ package parqueaderofbg;
  * @author fblum
  */
 public class principal extends javax.swing.JFrame {
-    ingresoVehiculo ingresoVehiculo;salidaVehiculo salidaVehiculo;
+    ingresoVehiculo ingresoVehiculo;salidaVehiculo salidaVehiculo;listarVehiculos listarVehiculos;
     /**
      * Creates new form principal
      */
@@ -22,6 +22,9 @@ public class principal extends javax.swing.JFrame {
         salidaVehiculo=new salidaVehiculo();
         salidaVehiculo.setBounds(400,0,400,500);
         add(salidaVehiculo);salidaVehiculo.setVisible(false);
+        listarVehiculos=new listarVehiculos();
+        listarVehiculos.setBounds(400,0,800,500);
+        add(listarVehiculos);listarVehiculos.setVisible(false);
     }
 
     /**
@@ -53,6 +56,11 @@ public class principal extends javax.swing.JFrame {
         });
 
         jButton2.setText("Listar Vehículo");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Ingresar Vehículo");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -118,6 +126,7 @@ public class principal extends javax.swing.JFrame {
         setSize(1200,500);//Define tamaño pagna principal
         ingresoVehiculo.setVisible(true);//Vuelve visible el panel correspondiente
         salidaVehiculo.setVisible(false);
+        listarVehiculos.setVisible(false);
         revalidate();
         repaint();
     }//GEN-LAST:event_jButton3ActionPerformed
@@ -126,9 +135,19 @@ public class principal extends javax.swing.JFrame {
         setSize(1200,500);//Define tamaño pagna principal
         ingresoVehiculo.setVisible(false);//Vuelve visible el panel correspondiente
         salidaVehiculo.setVisible(true);
+        listarVehiculos.setVisible(false);
         revalidate();
         repaint();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        setSize(1200,500);//Define tamaño pagna principal
+        ingresoVehiculo.setVisible(false);//Vuelve visible el panel correspondiente
+        salidaVehiculo.setVisible(false);
+        listarVehiculos.setVisible(true);
+        revalidate();
+        repaint();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

@@ -4,6 +4,21 @@
  */
 package parqueaderofbg;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author fblum
@@ -28,8 +43,8 @@ public class salidaVehiculo extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
-        jTextField1 = new javax.swing.JTextField();
+        salida = new javax.swing.JButton();
+        placa = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
 
@@ -43,7 +58,12 @@ public class salidaVehiculo extends javax.swing.JPanel {
         setBackground(new java.awt.Color(153, 255, 153));
         setPreferredSize(new java.awt.Dimension(400, 500));
 
-        jButton1.setText("Salida");
+        salida.setText("Salida");
+        salida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salidaActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Placa");
 
@@ -57,10 +77,10 @@ public class salidaVehiculo extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(144, 144, 144)
-                        .addComponent(jButton1))
+                        .addComponent(salida))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(100, 100, 100)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(151, 151, 151)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -76,20 +96,42 @@ public class salidaVehiculo extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 115, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(90, 90, 90)
-                .addComponent(jButton1)
+                .addComponent(salida)
                 .addGap(121, 121, 121))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void salidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salidaActionPerformed
+        DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//se da formato a fecha
+        Calendar cal=Calendar.getInstance();//Se hace llamado
+        Date date=cal.getTime();//Se pide la fecha
+        String fechaHoraSalida = dateFormat.format(date);//Hora según el formato
+        try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost/parqueaderodb","root","")){  
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM vehiculos WHERE placa='"+placa.getText().toUpperCase()+"' AND estado='DISPONIBLE'");
+            rs.next();//Para sacar el primer fila de datos
+            String fechaEntra=rs.getString("horaentrada");
+            Date fechaentra=dateFormat.parse(fechaEntra);
+            int minutoCobro=(int) (date.getTime()-fechaentra.getTime())/60000;//Entrega en ms por lo que se pasa a min
+            System.out.println(minutoCobro);
+            conn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(ingresoVehiculo.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"No se encuentra el vehículo, verifique datos.");
+        } catch (ParseException ex) {
+            Logger.getLogger(salidaVehiculo.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }//GEN-LAST:event_salidaActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField placa;
+    private javax.swing.JButton salida;
     // End of variables declaration//GEN-END:variables
 }
