@@ -4,9 +4,9 @@
  */
 package parqueaderofbg;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -18,6 +18,12 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.TIMES_ROMAN;
 
 /**
  *
@@ -123,10 +129,45 @@ public class salidaVehiculo extends javax.swing.JPanel {
                 precioPagar=minutoCobro*200;
             }
             JOptionPane.showMessageDialog(null,"El cliente "+rs.getString("propietario")+" debe pagar "+precioPagar+" pesos por "+minutoCobro+" minutos de servicio de un "+rs.getString("tipovehiculo"));
-            stmt.executeUpdate("UPDATE vehiculos SET horasalida='"+fechaHora+"', estado='NO DISPONIBLE', valorpagado='"+precioPagar+"' WHERE placa='"+placa.getText().toUpperCase()+"' AND estado='DISPONIBLE'");
-            
-            
-            conn.close();
+            String propietario=rs.getString("propietario");String tipoVehiculo=rs.getString("tipovehiculo");
+            stmt.executeUpdate("UPDATE vehiculos SET horasalida='"+fechaHora+"', estado='NO DISPONIBLE', valorpagado='"+precioPagar+"' WHERE placa='"+placa.getText().toUpperCase()+"' AND estado='DISPONIBLE'");         
+            int imprimirRec=JOptionPane.showConfirmDialog(null, "¿Desea imprimir el recibo?","Imprimir recibo",JOptionPane.YES_NO_OPTION);
+            if(imprimirRec==0){
+                try (PDDocument recibo = new PDDocument()) {
+                    PDPage page=new PDPage();//Se crea la página
+                    recibo.addPage(page);
+                    try (PDPageContentStream content = new PDPageContentStream(recibo, page) //Se crea el contenido
+                    ) {
+                        PDFont font=new PDType1Font(TIMES_ROMAN);
+                        content.beginText();//Se inicia el texto
+                        content.setFont(font, 12);
+                        content.setLeading(14.5f);
+                        content.newLineAtOffset(25, 725);
+                        String title="Parqueadero FBG";
+                        String par1="Hora Salida: "+fechaHora;
+                        String par2="Placa: "+placa.getText().toUpperCase();
+                        String par3="Tipo Vehiculo: "+tipoVehiculo;
+                        String par4="Propietario: "+propietario;
+                        String par5="Valor pagado: $"+String.valueOf(precioPagar);
+                        content.showText(title);
+                        content.newLine();                    
+                        content.showText(par1);
+                        content.newLine();                    
+                        content.showText(par2);
+                        content.newLine();                    
+                        content.showText(par3);
+                        content.newLine();                    
+                        content.showText(par4);
+                        content.newLine();                    
+                        content.showText(par5);
+                        content.endText();
+                    } //Se inicia el texto
+                    recibo.save("C:\\Users\\fblum\\Documents\\Proyectos\\parqueaderoFBG\\reciboPagado.pdf");//se guarda
+                    recibo.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(salidaVehiculo.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         } catch (SQLException ex) {
             Logger.getLogger(ingresoVehiculo.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null,"No se encuentra el vehículo, verifique datos.");

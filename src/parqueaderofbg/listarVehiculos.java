@@ -287,6 +287,7 @@ public class listarVehiculos extends javax.swing.JPanel {
                 String[] fila={rs.getString("id"),rs.getString("placa"),rs.getString("propietario"),rs.getString("tipovehiculo"),rs.getString("horaentrada").substring(10).substring(0,6),horaSalida,"$ "+pago};
                 modelo.addRow(fila);
             }while(rs.next());
+            conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(listarVehiculos.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null,"No se encuentran datos.");

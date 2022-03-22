@@ -5,6 +5,7 @@
 package parqueaderofbg;
 
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -16,6 +17,12 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
+import org.apache.pdfbox.pdmodel.PDDocument; 
+import org.apache.pdfbox.pdmodel.PDPage; 
+import org.apache.pdfbox.pdmodel.PDPageContentStream; 
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName.TIMES_ROMAN;
 
 
 /**
@@ -157,7 +164,36 @@ public class ingresoVehiculo extends javax.swing.JPanel {
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null,"Vehículo registrado");
             conn.close();
-        } catch (SQLException ex) {
+            try (PDDocument recibo = new PDDocument()) {
+                PDPage page=new PDPage();//Se crea la página
+                recibo.addPage(page);
+                try (PDPageContentStream content = new PDPageContentStream(recibo, page) //Se crea el contenido
+                ) {
+                    PDFont font=new PDType1Font(TIMES_ROMAN);
+                    content.beginText();//Se inicia el texto
+                    content.setFont(font, 12);
+                    content.setLeading(14.5f);
+                    content.newLineAtOffset(25, 725);
+                    String title="Parqueadero FBG";
+                    String par1="Hora Entrada: "+fechaHora;
+                    String par2="Propietario: "+propietario.getText().toUpperCase();
+                    String par3="Placa: "+placa.getText().toUpperCase();
+                    String par4="Tipo Vehiculo: "+tipoVehiculo;
+                    content.showText(title);
+                    content.newLine();                    
+                    content.showText(par1);
+                    content.newLine();                    
+                    content.showText(par2);
+                    content.newLine();                    
+                    content.showText(par3);
+                    content.newLine();                    
+                    content.showText(par4);
+                    content.endText();
+                } //Se inicia el texto
+                recibo.save("C:\\Users\\fblum\\Documents\\Proyectos\\parqueaderoFBG\\recibo.pdf");//se guarda
+                recibo.close();
+            }
+        } catch (SQLException | IOException ex) {
             Logger.getLogger(ingresoVehiculo.class.getName()).log(Level.SEVERE, null, ex);
         }
         
