@@ -4,6 +4,19 @@
  */
 package parqueaderofbg;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+
 /**
  *
  * @author fblum
@@ -15,6 +28,11 @@ public class listarVehiculos extends javax.swing.JPanel {
      */
     public listarVehiculos() {
         initComponents();
+        TableColumnModel columnModel=tableInfo.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(20);columnModel.getColumn(1).setPreferredWidth(40);
+        columnModel.getColumn(2).setPreferredWidth(150);columnModel.getColumn(3).setPreferredWidth(100);
+        columnModel.getColumn(4).setPreferredWidth(70);columnModel.getColumn(5).setPreferredWidth(70);
+        columnModel.getColumn(6).setPreferredWidth(100);    
     }
 
     /**
@@ -32,16 +50,16 @@ public class listarVehiculos extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         propietario = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        fecha = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
-        jCheckBox3 = new javax.swing.JCheckBox();
-        jCheckBox4 = new javax.swing.JCheckBox();
+        auto = new javax.swing.JCheckBox();
+        moto = new javax.swing.JCheckBox();
+        enParqueadero = new javax.swing.JCheckBox();
+        fueraParqueadero = new javax.swing.JCheckBox();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        table = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        tableInfo = new javax.swing.JTable();
+        buscar = new javax.swing.JButton();
+        fecha = new com.toedter.calendar.JDateChooser();
 
         jLabel1.setText("Listar Vehículos");
 
@@ -53,17 +71,37 @@ public class listarVehiculos extends javax.swing.JPanel {
 
         jLabel5.setText("Tipo Vehículo");
 
-        jCheckBox1.setText("Automovil");
+        auto.setText("Automovil");
+        auto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoActionPerformed(evt);
+            }
+        });
 
-        jCheckBox2.setText("Motocicleta");
+        moto.setText("Motocicleta");
+        moto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                motoActionPerformed(evt);
+            }
+        });
 
-        jCheckBox3.setText("En parqueadero");
+        enParqueadero.setText("En parqueadero");
+        enParqueadero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                enParqueaderoActionPerformed(evt);
+            }
+        });
 
-        jCheckBox4.setText("Fuera parqueadero");
+        fueraParqueadero.setText("Fuera parqueadero");
+        fueraParqueadero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fueraParqueaderoActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Ubicación vehículo");
 
-        table.setModel(new javax.swing.table.DefaultTableModel(
+        tableInfo.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -91,11 +129,16 @@ public class listarVehiculos extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        table.setMaximumSize(new java.awt.Dimension(800, 300));
-        table.setMinimumSize(new java.awt.Dimension(800, 300));
-        jScrollPane1.setViewportView(table);
+        tableInfo.setMaximumSize(new java.awt.Dimension(800, 300));
+        tableInfo.setMinimumSize(new java.awt.Dimension(800, 300));
+        jScrollPane1.setViewportView(tableInfo);
 
-        jButton1.setText("Buscar");
+        buscar.setText("Buscar");
+        buscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -108,100 +151,155 @@ public class listarVehiculos extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(72, 72, 72)
-                                        .addComponent(jLabel2))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(59, 59, 59)
-                                        .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(13, 13, 13)
-                                        .addComponent(jLabel3))
-                                    .addComponent(propietario, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(10, 10, 10)
-                                        .addComponent(jLabel6))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel1)))
-                        .addGap(70, 70, 70))
+                        .addGap(109, 109, 109)
+                        .addComponent(jLabel5))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(jCheckBox1)
+                                .addComponent(auto)
                                 .addGap(36, 36, 36)
-                                .addComponent(jCheckBox2)
+                                .addComponent(moto)
                                 .addGap(27, 27, 27)
-                                .addComponent(jCheckBox3)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                                .addComponent(enParqueadero))
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(109, 109, 109)
-                                .addComponent(jLabel5)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jCheckBox4)
-                        .addGap(38, 38, 38)))
+                                .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(propietario, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jLabel4))
-                    .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(116, 116, 116))
+                        .addGap(0, 3, Short.MAX_VALUE)
+                        .addComponent(fueraParqueadero))
+                    .addComponent(fecha, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(35, 35, 35)
+                .addComponent(buscar)
+                .addGap(194, 194, 194))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(jLabel2)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(144, 144, 144)
+                                .addComponent(jLabel3)
+                                .addGap(84, 84, 84)
+                                .addComponent(jLabel4)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addGap(40, 40, 40))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)))
+                .addGap(336, 336, 336))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(fecha, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(propietario, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(placa, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(propietario, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(fecha, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jCheckBox1)
-                            .addComponent(jCheckBox2)
-                            .addComponent(jCheckBox3)
-                            .addComponent(jCheckBox4)))
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addComponent(auto)
+                            .addComponent(moto)
+                            .addComponent(enParqueadero)
+                            .addComponent(fueraParqueadero)))
+                    .addComponent(buscar, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void motoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_motoActionPerformed
+
+    }//GEN-LAST:event_motoActionPerformed
+
+    private void autoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoActionPerformed
+
+    }//GEN-LAST:event_autoActionPerformed
+
+    private void enParqueaderoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enParqueaderoActionPerformed
+        fueraParqueadero.setSelected(false);
+    }//GEN-LAST:event_enParqueaderoActionPerformed
+
+    private void fueraParqueaderoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fueraParqueaderoActionPerformed
+        enParqueadero.setSelected(false);
+    }//GEN-LAST:event_fueraParqueaderoActionPerformed
+
+    private void buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarActionPerformed
+        String ubicacion = "",tipoVehiculo="",fecha2="",propietario2="",placa2="",consulta="";
+        DefaultTableModel modelo=(DefaultTableModel) tableInfo.getModel();
+        modelo.setRowCount(0);
+        if(enParqueadero.isSelected()){
+            ubicacion="DISPONIBLE";
+        }else if(fueraParqueadero.isSelected()){
+            ubicacion="NO DISPONIBLE";
+        }
+        if(moto.isSelected()){
+            tipoVehiculo="MOTOCICLETA";
+        }else if(auto.isSelected()){
+            tipoVehiculo="AUTOMOVIL";
+        }
+        if(fecha.getDate()!=null){
+            DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd");
+            fecha2=dateFormat.format(fecha.getDate());
+        }
+        placa2=placa.getText().toUpperCase();
+        propietario2=propietario.getText().toUpperCase();
+        
+        try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost/parqueaderodb","root","")){  
+            Statement stmt = conn.createStatement();
+            consulta = "SELECT * FROM vehiculos WHERE estado='" + ubicacion + "' AND tipovehiculo LIKE'%" + tipoVehiculo + "%' AND placa LIKE '%" + placa2 + "%' AND propietario LIKE '%" + propietario2 + "%'";// AND horaentrada LIKE '" + fecha2 + "%'";
+            System.out.println(consulta);
+            ResultSet rs = stmt.executeQuery(consulta);
+            rs.next();
+            do{
+                String horaSalida=rs.getString("horasalida");
+                String pago=rs.getString("valorpagado");
+                if(horaSalida==null){
+                    horaSalida="No ha salido";
+                    pago="0";
+                }else{
+                    horaSalida=rs.getString("horasalida").substring(10).substring(0,6);
+                    pago=rs.getString("valorpagado");
+                }
+                String[] fila={rs.getString("id"),rs.getString("placa"),rs.getString("propietario"),rs.getString("tipovehiculo"),rs.getString("horaentrada").substring(10).substring(0,6),horaSalida,"$ "+pago};
+                modelo.addRow(fila);
+            }while(rs.next());
+        } catch (SQLException ex) {
+            Logger.getLogger(listarVehiculos.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"No se encuentran datos.");
+        }
+    }//GEN-LAST:event_buscarActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField fecha;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
-    private javax.swing.JCheckBox jCheckBox3;
-    private javax.swing.JCheckBox jCheckBox4;
+    private javax.swing.JCheckBox auto;
+    private javax.swing.JButton buscar;
+    private javax.swing.JCheckBox enParqueadero;
+    private com.toedter.calendar.JDateChooser fecha;
+    private javax.swing.JCheckBox fueraParqueadero;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -209,8 +307,9 @@ public class listarVehiculos extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JCheckBox moto;
     private javax.swing.JTextField placa;
     private javax.swing.JTextField propietario;
-    private javax.swing.JTable table;
+    private javax.swing.JTable tableInfo;
     // End of variables declaration//GEN-END:variables
 }

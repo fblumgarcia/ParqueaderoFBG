@@ -107,6 +107,8 @@ public class salidaVehiculo extends javax.swing.JPanel {
         DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//se da formato a fecha
         Calendar cal=Calendar.getInstance();//Se hace llamado
         Date date=cal.getTime();//Se pide la fecha
+        String fechaHora = dateFormat.format(date);//Si da el formato
+        int precioPagar=0;
         String fechaHoraSalida = dateFormat.format(date);//Hora según el formato
         try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost/parqueaderodb","root","")){  
             Statement stmt = conn.createStatement();
@@ -115,7 +117,15 @@ public class salidaVehiculo extends javax.swing.JPanel {
             String fechaEntra=rs.getString("horaentrada");
             Date fechaentra=dateFormat.parse(fechaEntra);
             int minutoCobro=(int) (date.getTime()-fechaentra.getTime())/60000;//Entrega en ms por lo que se pasa a min
-            System.out.println(minutoCobro);
+            if("AUTOMOVIL".equals(rs.getString("tipovehiculo"))){
+                precioPagar=minutoCobro*400;
+            }else if("MOTOCICLETA".equals(rs.getString("tipovehiculo"))){
+                precioPagar=minutoCobro*200;
+            }
+            JOptionPane.showMessageDialog(null,"El cliente "+rs.getString("propietario")+" debe pagar "+precioPagar+" pesos por "+minutoCobro+" minutos de servicio de un "+rs.getString("tipovehiculo"));
+            stmt.executeUpdate("UPDATE vehiculos SET horasalida='"+fechaHora+"', estado='NO DISPONIBLE', valorpagado='"+precioPagar+"' WHERE placa='"+placa.getText().toUpperCase()+"' AND estado='DISPONIBLE'");
+            
+            
             conn.close();
         } catch (SQLException ex) {
             Logger.getLogger(ingresoVehiculo.class.getName()).log(Level.SEVERE, null, ex);
